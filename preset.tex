@@ -28,9 +28,12 @@
 
 \usepackage{changepage}			% indent environment
 
+% --- referencing
+\usepackage{hyperref}
+
 % --- images
 \usepackage{tikz}					% drawing options
-\usetikzlibrary{shapes, calc}
+\usetikzlibrary{shapes, calc, arrows}
 
 \usepackage{graphicx}				% including graphics
 
@@ -39,8 +42,11 @@
 \usepackage{amssymb}				% math symbols
 \usepackage{bbm}					% better double stroke chars like \mathbbm{1}
 \usepackage{fixmath}				% better font options in math mode like \mathbold
-\usepackage{semantic}				% arrow shortcuts in math mode
-\usepackage{stmaryrd}				% lighning and ???
+\usepackage{semantic}				% (arrow) shortcuts in math mode
+\usepackage{stmaryrd}				% lightning and ???
+\usepackage{mathtools}
+%\usepackage{extpfeil}
+%\usepackage{mathabx}				% one option to obtain \Dashv, but changes other symbols -.-
 
 % --- optional commands
 \usepackage{xparse}					% better command and environment definition
@@ -60,7 +66,7 @@
 \newfontfamily\sectionfont[Color=sectioncolor]{Latin Modern Roman}
 \newfontfamily\subsectionfont[Color=subsectioncolor]{Latin Modern Roman}
 \newfontfamily\subsubsectionfont[Color=subsubsectioncolor]{Latin Modern Roman}
-\newfontfamily\theoremfont{Helvetica Neue}
+\newfontfamily\theoremfont{Latin Modern Roman}
 
 \usepackage{blindtext}
 
@@ -115,8 +121,15 @@
 \NewDocumentEnvironment
 	{utheoremenvironment}
 	{moo}
-	{\begin{thmlist}[label={#1}]\item\IfNoValueTF{#2}{}{{\color{titlecolor}[ #2 ]}\par\vspace{0.1\baselineskip}}}
-	{\IfNoValueTF{#3}{}{\hfill #3}\end{thmlist}}
+	{
+		\begin{mdframed}[backgroundcolor=white,leftline=false,rightline=false,linecolor=white,linewidth=3pt]
+			\begin{thmlist}[label={#1}]
+				\item\IfNoValueTF{#2}{}{{\color{titlecolor}[ #2 ]}\par\vspace{0.1\baselineskip}}}
+	{
+				\IfNoValueTF{#3}{}{\hfill #3}
+			\end{thmlist}
+		\end{mdframed}
+	}
 	
 % the theorem environments
 \NewDocumentEnvironment
@@ -141,6 +154,12 @@
 	{lemma}
 	{o}
 	{\theoremenvironment{Lem.}{backgroundcolor}[#1]}
+	{\endtheoremenvironment}	
+	
+\NewDocumentEnvironment
+	{remark}
+	{o}
+	{\theoremenvironment{Rem.}{white}[#1]}
 	{\endtheoremenvironment}		
 	
 \NewDocumentEnvironment
@@ -165,6 +184,12 @@
 	{sketch}
 	{o}
 	{\utheoremenvironment{Sketch}[#1][$\Diamond$]}
+	{\endutheoremenvironment}
+	
+\NewDocumentEnvironment
+	{uremark}
+	{o}
+	{\utheoremenvironment{Rem.}[#1]}
 	{\endutheoremenvironment}
 	
 	
@@ -212,17 +237,94 @@
 \newcommand\2{\mathbbm{2}}
 \newcommand\3{\mathbbm{3}}
 
+\renewcommand\OE{\textsf{Œ}}
+
 % renaming symbols
 \newcommand\intersection{\cap}
 \newcommand\Intersection{\bigcap}
 \newcommand\union{\cup}
 \newcommand\Union{\bigcup}
 
+\newcommand\product{\mathbin{\Pi}}
+\newcommand\Product{\prod}
+\newcommand\coproduct{\amalg}
+\newcommand\Coproduct{\coprod}
+
+\newcommand{\tensor}{\otimes}
+
+%todo equiv, cong, isom
+
+% new arrows
+\newcommand{\longrightepi}{\longtwoheadrightarrow}
+\newcommand{\longleftepi}{\longtwoheadleftarrow}
+%\newcommand{\longrightmono}{\;\scalebox{0.9}{\ensuremath{\succ}}\!\!\longrightarrow}
+\newcommand{\longrightmono}{\succ\!\!\longrightarrow}
+\newcommand{\longleftmono}{\longleftarrow\!\!\prec}
+
+
+\newcommand{\rightcirclearrow}{\mathrel{\vphantom{\rightarrow}\mathpalette\circlearrowtemp\relax}}
+
+\newcommand{\circlearrowtemp}[2]{%
+  \ooalign{%
+    \hidewidth$#1\circ\mkern1mu$\hidewidth\cr
+    $#1\longrightarrow$\cr}%
+}
+
+%todo
+\newcommand{\cupdot}{\mathbin{\mathaccent\cdot\cup}}
+\newcommand\dunion{\cupdot}
+\newcommand\DUnion{\Union}
+
+%category theory
+\NewDocumentCommand{\cat}{o}{
+	\IfNoValueTF{#1}{
+		\textbf{cat}
+	}{
+		\textbf{\lowercase{#1}}
+	}
+}
+\NewDocumentCommand{\Cat}{o}{
+	\IfNoValueTF{#1}{
+		\mathfrak{Cat}
+	}{
+		\textbf{#1}
+	}
+}
+\NewDocumentCommand{\CAT}{o}{
+	\IfNoValueTF{#1}{
+		\textbf{CAT}
+	}{
+		\textbf{\uppercase{#1}}
+	}
+}
+
+\newcommand{\Ob}{\operatorname{Ob}}
+\newcommand{\Mor}{\operatorname{Mor}}
+
+%ligatures
+\mathlig{<==>}{\iff}
+\mathlig{==>}{\implies}
+\mathlig{<==}{\impliedby}
+
+\mathlig{-->>}{\longrightepi}
+\mathlig{<<--}{\longleftepi}
+\mathlig{>-->}{\longrightmono} %todo
+\mathlig{<--<}{\longleftmono} %todo
+\mathlig{-o->}{\rightcirclearrow}
+
+\mathlig{:=}{\coloneqq}
+\mathlig{:}{\colon}
+
+\mathlig{-|}{\dashv}
+\mathlig{|-}{\vdash}
+\mathlig{=|}{\Dashv}
+\mathlig{|=}{\vDash}
+
 	
 % new environment commands
 \NewDocumentCommand\norm{m}{\Vert #1 \Vert}
 \NewDocumentCommand\scalarproduct{mm}{\langle#1,#2\rangle}
-\NewDocumentCommand\equivalence{mm}{\begin{array}{ccl}#1&\iff&#2\end{array}}
+%\NewDocumentCommand\equivalence{mm}{\begin{array}{ccl}#1&\iff&#2\end{array}}
 	
 	
 	
